@@ -49,6 +49,10 @@
     --pri: #00f0ff;
     --sec: #fcee0a;
   }
+  body.theme-matrix {
+    --pri: #00ff66;
+    --sec: #00aa44;
+  }
 
   /* Cyber-frame panel with angled corners */
   .cyber-panel {
@@ -300,9 +304,10 @@
       <button onclick="selectPreset('hex', this)" class="sec">05 // ICE-HEX</button>
       <button onclick="selectPreset('hazard', this)" class="hzd">06 // HZD-OVL</button>
     </div>
-    <div class="btn-grid-2" style="margin-top:6px;">
-      <button onclick="selectPreset('reticle', this)">07 // OPT-RETICLE</button>
-      <button onclick="selectPreset('optics', this)" class="hzd">08 // DUAL-OPTICS</button>
+    <div class="btn-row" style="margin-top:6px;">
+      <button onclick="selectPreset('reticle', this)">07 // OPT-LCK</button>
+      <button onclick="selectPreset('optics', this)" class="hzd">08 // OPTICS</button>
+      <button onclick="selectPreset('matrix', this)" class="sec">09 // MTX-RAIN</button>
     </div>
   </div>
 
@@ -574,6 +579,25 @@ const SCREENS = {
   ])
 };
 
+function generateMatrixRainStrip(numScreens = 8) {
+  const totalCols = 48 * numScreens;
+  const grid = Array.from({length: 12}, () => Array(totalCols).fill(0));
+  for (let col = 0; col < totalCols; col++) {
+    // Staggered vertical rain trails across columns
+    if (Math.random() < 0.68) {
+      const dropLen = 3 + Math.floor(Math.random() * 6); // 3..8 px tall
+      const startRow = Math.floor(Math.random() * 12);
+      for (let i = 0; i < dropLen; i++) {
+        // Occasional tail flicker gap for authentic Matrix digital rain look
+        if (i === dropLen - 2 && Math.random() < 0.45) continue;
+        const r = (startRow + i) % 12;
+        grid[r][col] = 1;
+      }
+    }
+  }
+  return grid;
+}
+
 const PRESETS = {
   telemetry_tape: {
     grid: () => hcatGrids(SCREENS.ecg, SCREENS.ecg, SCREENS.conduit, SCREENS.synth, SCREENS.reticle, SCREENS.hex, SCREENS.hazard, SCREENS.helix),
@@ -606,6 +630,10 @@ const PRESETS = {
   optics: {
     grid: () => SCREENS.optics.map(r => [...r]),
     mode: 1, modeName: 'STATIC', speed: 100, theme: 'theme-hazard', label: 'STATE // OPTICS'
+  },
+  matrix: {
+    grid: () => generateMatrixRainStrip(8),
+    mode: 6, modeName: 'DOWN', speed: 245, theme: 'theme-matrix', label: 'STATE // MTX-RAIN'
   }
 };
 
@@ -928,14 +956,29 @@ function invertCurrentGrid() {
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 let phase = 0;
+const rainDrops = Array.from({length: 40}, () => Math.random() * 76);
 
 function animateHud() {
   phase += 0.12;
   const w = scopeCanvas.width, h = scopeCanvas.height;
-  scopeCtx.fillStyle = 'rgba(3, 4, 6, 0.28)';
+  scopeCtx.fillStyle = 'rgba(3, 4, 6, 0.25)';
   scopeCtx.fillRect(0, 0, w, h);
 
   const priColor = getComputedStyle(document.body).getPropertyValue('--pri').trim() || '#fcee0a';
+
+  if (currentPresetKey === 'matrix') {
+    scopeCtx.fillStyle = priColor;
+    for (let i = 0; i < rainDrops.length; i++) {
+      const x = i * 6 + 2;
+      const y = rainDrops[i];
+      scopeCtx.fillRect(x, y, 3, 5);
+      rainDrops[i] += 2.2 + (i % 3) * 0.8;
+      if (rainDrops[i] > h && Math.random() > 0.85) rainDrops[i] = 0;
+    }
+    requestAnimationFrame(animateHud);
+    return;
+  }
+
   scopeCtx.strokeStyle = priColor;
   scopeCtx.lineWidth = 1.8;
   scopeCtx.beginPath();
