@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#fcee0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>SYS//09 TELEMETRY DECK</title>
+<style>
+  :root {
+    --bg: #050508;
+    --panel: #0b0d13;
+    --pri: #fcee0a;
+    --sec: #00f0ff;
+    --hzd: #ff003c;
+    --ok: #00ff66;
+    --dim: #3a4152;
+    --text: #e8f0f8;
+  }
+  * {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  body {
+    margin: 0;
+    padding: 8px;
+    background: var(--bg);
+    color: var(--pri);
+    font-family: 'Courier New', Consolas, monospace;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background-image:
+      linear-gradient(rgba(252, 238, 10, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  body.theme-hazard {
+    --pri: #ff003c;
+    --sec: #fcee0a;
+  }
+  body.theme-ice {
+    --pri: #00f0ff;
+    --sec: #fcee0a;
+  }
+
+  /* Cyber-frame panel with angled corners */
+  .cyber-panel {
+    background: var(--panel);
+    border: 1px solid var(--pri);
+    position: relative;
+    padding: 8px 10px;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    box-shadow: inset 0 0 12px rgba(252, 238, 10, 0.06);
+  }
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid var(--dim);
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    color: var(--sec);
+  }
+
+  /* Top status bar */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--pri);
+    color: #000;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+  }
+  .status-pill {
+    padding: 2px 6px;
+    background: #000;
+    color: var(--pri);
+    font-size: 10px;
+  }
+  .status-pill.connected {
+    color: var(--ok);
+  }
+
+  /* Action buttons */
+  .btn-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .btn-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  button {
+    background: #10141f;
+    color: var(--pri);
+    border: 1px solid var(--pri);
+    padding: 9px 6px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
+    transition: all 0.12s ease;
+  }
+  button:active, button.active {
+    background: var(--pri);
+    color: #000;
+    box-shadow: 0 0 10px var(--pri);
+  }
+  button.sec {
+    border-color: var(--sec);
+    color: var(--sec);
+  }
+  button.sec:active, button.sec.active {
+    background: var(--sec);
+    color: #000;
+    box-shadow: 0 0 10px var(--sec);
+  }
+  button.hzd {
+    border-color: var(--hzd);
+    color: var(--hzd);
+  }
+  button.hzd:active, button.hzd.active {
+    background: var(--hzd);
+    color: #000;
+    box-shadow: 0 0 10px var(--hzd);
+  }
+
+  /* Live Telemetry Oscilloscope + Hex Dump */
+  .telemetry-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 8px;
+  }
+  canvas#scopeCanvas {
+    width: 100%;
+    height: 76px;
+    background: #030406;
+    border: 1px solid var(--dim);
+    display: block;
+  }
+  .hex-box {
+    font-size: 9px;
+    line-height: 1.25;
+    color: var(--sec);
+    height: 76px;
+    overflow: hidden;
+    background: #030406;
+    border: 1px solid var(--dim);
+    padding: 4px;
+    white-space: pre;
+  }
+
+  /* Vitals & Bars */
+  .vitals-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .vital-card {
+    background: #06080d;
+    border-left: 2px solid var(--pri);
+    padding: 4px 6px;
+  }
+  .vital-label {
+    font-size: 9px;
+    color: var(--sec);
+  }
+  .vital-val {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--pri);
+  }
+
+  /* 48x12 LED Matrix Mirror */
+  .matrix-wrap {
+    overflow-x: auto;
+    background: #030407;
+    border: 1px solid var(--dim);
+    padding: 6px;
+  }
+  canvas#ledCanvas {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 48 / 12;
+    image-rendering: pixelated;
+    display: block;
+    touch-action: none;
+  }
+
+  /* Sliders */
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  .slider-row span.lbl {
+    width: 58px;
+    color: var(--sec);
+  }
+  .slider-row input[type=range] {
+    flex: 1;
+    accent-color: var(--pri);
+  }
+  .slider-row span.val {
+    width: 32px;
+    text-align: right;
+  }
+
+  /* Log console */
+  .log-bar {
+    font-size: 10px;
+    color: var(--sec);
+    background: #030407;
+    border: 1px solid var(--dim);
+    padding: 4px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP HEADER BAR -->
+  <div class="top-bar">
+    <span>SYS//09 CYBER-TELEMETRY</span>
+    <span id="bleStatus" class="status-pill">BLE: OFFLINE</span>
+  </div>
+
+  <!-- CONNECTION & DECK UTILITY ROW -->
+  <div class="btn-row">
+    <button id="btnConnect" class="sec" onclick="connectBadge()">LINK NODE</button>
+    <button id="btnWake" onclick="toggleFullscreen()">LOCK HUD</button>
+    <button id="btnPower" class="hzd" onclick="togglePower()">NODE PWR</button>
+  </div>
+
+  <!-- LIVE OSCILLOSCOPE + HEX STREAM + VITALS -->
+  <div class="cyber-panel">
+    <div class="panel-header">
+      <span>BIO // NEURAL CONDUIT</span>
+      <span id="activeStateLabel">STATE // TAPE-08</span>
+    </div>
+    <div class="telemetry-grid">
+      <canvas id="scopeCanvas" width="240" height="76"></canvas>
+      <div class="hex-box" id="hexBox"></div>
+    </div>
+    <div class="vitals-row">
+      <div class="vital-card">
+        <div class="vital-label">PULSE</div>
+        <div class="vital-val" id="valBpm">174</div>
+      </div>
+      <div class="vital-card">
+        <div class="vital-label">SYNC</div>
+        <div class="vital-val" id="valSync">98.4%</div>
+      </div>
+      <div class="vital-card">
+        <div class="vital-label">LOAD</div>
+        <div class="vital-val" id="valLoad">82%</div>
+      </div>
+      <div class="vital-card">
+        <div class="vital-label">CORE</div>
+        <div class="vital-val" id="valTemp">39.1°</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIEGETIC PATTERN PRESETS (1-TAP BEAM TO BADGE) -->
+  <div class="cyber-panel">
+    <div class="panel-header">
+      <span>OPTIC MATRIX // PRESETS</span>
+      <span id="txIndicator">READY</span>
+    </div>
+    <div class="btn-row">
+      <button onclick="selectPreset('telemetry_tape', this)" class="active">01 // TAPE-8</button>
+      <button onclick="selectPreset('ecg', this)">02 // BIO-ECG</button>
+      <button onclick="selectPreset('synth', this)">03 // SYN-OSC</button>
+      <button onclick="selectPreset('conduit', this)">04 // BUS-FLOW</button>
+      <button onclick="selectPreset('hex', this)" class="sec">05 // ICE-HEX</button>
+      <button onclick="selectPreset('hazard', this)" class="hzd">06 // HZD-OVL</button>
+    </div>
+    <div class="btn-grid-2" style="margin-top:6px;">
+      <button onclick="selectPreset('reticle', this)">07 // OPT-RETICLE</button>
+      <button onclick="selectPreset('optics', this)" class="hzd">08 // DUAL-OPTICS</button>
+    </div>
+  </div>
+
+  <!-- 48x12 LIVE MATRIX PREVIEW & TOUCH PAD -->
+  <div class="cyber-panel">
+    <div class="panel-header">
+      <span>NODE MIRROR // 48x12 (TOUCH TO EDIT)</span>
+      <span id="gridDimLabel">384x12 PX</span>
+    </div>
+    <div class="matrix-wrap">
+      <canvas id="ledCanvas" width="384" height="96"></canvas>
+    </div>
+    <div class="btn-row" style="margin-top:6px;">
+      <button onclick="clearSingleScreen()">CLR 48x12</button>
+      <button onclick="invertCurrentGrid()">INVERT</button>
+      <button class="sec" onclick="transmitCurrentGrid()">BEAM MATRIX</button>
+    </div>
+  </div>
+
+  <!-- HARDWARE VECTOR / SPEED / BRIGHTNESS CONTROLS -->
+  <div class="cyber-panel">
+    <div class="panel-header">
+      <span>VECTOR // MODULATION</span>
+      <span id="modeLabel">MODE: LEFT (3)</span>
+    </div>
+    <div class="btn-row">
+      <button onclick="setBadgeMode(1, 'STATIC')">STATIC</button>
+      <button onclick="setBadgeMode(3, 'LEFT')">VEC-L</button>
+      <button onclick="setBadgeMode(4, 'RIGHT')">VEC-R</button>
+      <button onclick="setBadgeMode(5, 'UP')">VEC-UP</button>
+      <button onclick="setBadgeMode(6, 'DOWN')">VEC-DN</button>
+      <button onclick="setBadgeMode(7, 'SNOW')">DROP</button>
+    </div>
+    <div class="slider-row">
+      <span class="lbl">VELOCITY</span>
+      <input type="range" id="rngSpeed" min="5" max="250" value="150" onchange="setBadgeSpeed(this.value)" oninput="document.getElementById('valSpeed').textContent=this.value">
+      <span class="val" id="valSpeed">150</span>
+    </div>
+    <div class="slider-row">
+      <span class="lbl">LUMENS</span>
+      <input type="range" id="rngLight" min="10" max="255" value="200" onchange="setBadgeLight(this.value)" oninput="document.getElementById('valLight').textContent=this.value">
+      <span class="val" id="valLight">200</span>
+    </div>
+  </div>
+
+  <div class="log-bar" id="logBar">SYS//09 INITIALIZED — TAP [LINK NODE] FOR BLE HANDSHAKE</div>
+
+<script>
+// ============================================================================
+// 1. Pure-JS AES-128-ECB Implementation (Zero External Dependencies)
+//    Verified against idealLED key: 34 52 2A 5B 7A 6E 49 2C 08 09 0A 9D 8D 2A 23 F8
+// ============================================================================
+const AES_KEY = [
+  0x34, 0x52, 0x2A, 0x5B, 0x7A, 0x6E, 0x49, 0x2C,
+  0x08, 0x09, 0x0A, 0x9D, 0x8D, 0x2A, 0x23, 0xF8
+];
+
+const SBOX = [
+  0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
+  0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
+  0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
+  0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
+  0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
+  0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
+  0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
+  0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
+  0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
+  0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
+  0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
+  0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
+  0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
+  0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
+  0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
+  0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
+];
+const RCON = [0x00,0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36];
+
+function xtime(a) { return ((a << 1) ^ (((a >> 7) & 1) * 0x1b)) & 0xff; }
+
+function expandKey(key) {
+  const w = new Uint8Array(176);
+  for (let i = 0; i < 16; i++) w[i] = key[i];
+  for (let i = 4; i < 44; i++) {
+    let t0 = w[(i - 1) * 4], t1 = w[(i - 1) * 4 + 1], t2 = w[(i - 1) * 4 + 2], t3 = w[(i - 1) * 4 + 3];
+    if (i % 4 === 0) {
+      const tmp = t0;
+      t0 = SBOX[t1] ^ RCON[i / 4];
+      t1 = SBOX[t2];
+      t2 = SBOX[t3];
+      t3 = SBOX[tmp];
+    }
+    w[i * 4]     = w[(i - 4) * 4]     ^ t0;
+    w[i * 4 + 1] = w[(i - 4) * 4 + 1] ^ t1;
+    w[i * 4 + 2] = w[(i - 4) * 4 + 2] ^ t2;
+    w[i * 4 + 3] = w[(i - 4) * 4 + 3] ^ t3;
+  }
+  return w;
+}
+const EXPANDED_KEY = expandKey(AES_KEY);
+
+function aes128EncryptBlock(rawBytes) {
+  const s = new Uint8Array(16);
+  for (let i = 0; i < 16; i++) s[i] = (i < rawBytes.length ? rawBytes[i] : 0) ^ EXPANDED_KEY[i];
+
+  for (let round = 1; round <= 10; round++) {
+    // SubBytes
+    for (let i = 0; i < 16; i++) s[i] = SBOX[s[i]];
+    // ShiftRows
+    let t = s[1]; s[1] = s[5]; s[5] = s[9]; s[9] = s[13]; s[13] = t;
+    t = s[2]; s[2] = s[10]; s[10] = t; t = s[6]; s[6] = s[14]; s[14] = t;
+    t = s[15]; s[15] = s[11]; s[11] = s[7]; s[7] = s[3]; s[3] = t;
+    // MixColumns
+    if (round < 10) {
+      for (let c = 0; c < 16; c += 4) {
+        const a0 = s[c], a1 = s[c+1], a2 = s[c+2], a3 = s[c+3];
+        const h = a0 ^ a1 ^ a2 ^ a3;
+        s[c]   ^= h ^ xtime(a0 ^ a1);
+        s[c+1] ^= h ^ xtime(a1 ^ a2);
+        s[c+2] ^= h ^ xtime(a2 ^ a3);
+        s[c+3] ^= h ^ xtime(a3 ^ a0);
+      }
+    }
+    // AddRoundKey
+    const ro = round * 16;
+    for (let i = 0; i < 16; i++) s[i] ^= EXPANDED_KEY[ro + i];
+  }
+  return s;
+}
+
+function buildCommandPacket(cmdStr, ...args) {
+  const bytes = [cmdStr.length + args.length];
+  for (let i = 0; i < cmdStr.length; i++) bytes.push(cmdStr.charCodeAt(i));
+  for (const a of args) bytes.push(a & 0xff);
+  return aes128EncryptBlock(bytes);
+}
+
+// ============================================================================
+// 2. Diegetic 48x12 Pixel Screens & 6x12 Segment Encoder
+// ============================================================================
+function asciiToGrid(lines) {
+  const w = Math.max(...lines.map(l => l.length));
+  return lines.map(line => {
+    const row = [];
+    for (let i = 0; i < w; i++) row.push(line[i] === '#' ? 1 : 0);
+    return row;
+  });
+}
+
+function hcatGrids(...grids) {
+  const out = Array.from({length: 12}, () => []);
+  for (const g of grids) {
+    for (let r = 0; r < 12; r++) out[r].push(...g[r]);
+  }
+  return out;
+}
+
+const SCREENS = {
+  ecg: asciiToGrid([
+    "#...#...#...#...#...#...#...#...#...#...#...#...",
+    "........#...................#...................",
+    "........#...................#...............#...",
+    ".......###.................###.............###..",
+    ".......#.#......#..........#.#......#......#.#..",
+    ".....###.#.....###.......###.#.....###...###.#..",
+    "######...#....#...#.######...#....#...####...#.#",
+    ".........#...#....###........#...#...........#..",
+    ".........#..#................#..#............#..",
+    ".........###.................###.............#..",
+    "..........#...................#.................",
+    "#...#...#...#...#...#...#...#...#...#...#...#..."
+  ]),
+  synth: asciiToGrid([
+    "....##..........##..........##..........##......",
+    "....##....##....##....##....##....##....##....##",
+    ".##.##....##.##.##....##.##.##....##.##.##....##",
+    ".##.##.##.##.##.##.##.##.##.##.##.##.##.##.##.##",
+    ".##.##.##.##.##.##.##.##.##.##.##.##.##.##.##.##",
+    "################################################",
+    "################################################",
+    ".##.##.##.##.##.##.##.##.##.##.##.##.##.##.##.##",
+    ".##.##.##.##.##.##.##.##.##.##.##.##.##.##.##.##",
+    ".##.##....##.##.##....##.##.##....##.##.##....##",
+    "....##....##....##....##....##....##....##....##",
+    "....##..........##..........##..........##......"
+  ]),
+  conduit: asciiToGrid([
+    "....#....##....##....##....##....##....##....#..",
+    "..#####..##..######..##..######..##..######..#..",
+    "....#...####...##...####...##...####...##....#..",
+    ".#######.##.########.##.########.##.########.#..",
+    "#...#....##....##....##....##....##....##....#.#",
+    "################################################",
+    "################################################",
+    "#...#....##....##....##....##....##....##....#.#",
+    ".#######.##.########.##.########.##.########.#..",
+    "....#...####...##...####...##...####...##....#..",
+    "..#####..##..######..##..######..##..######..#..",
+    "....#....##....##....##....##....##....##....#.."
+  ]),
+  hex: asciiToGrid([
+    "##..#.###...##..###.#...##..#.###...##..###.#...",
+    "##..#.#.#...##..#...#...##..#.#.#...##..#...#...",
+    "..#.#.###.#...#.###.###...#.#.###.#...#.###.###.",
+    "..#...#.#.#...#...#...#...#...#.#.#...#...#...#.",
+    "###.###.#.###.###.###.#.###.###.#.###.###.###.#.",
+    "#.#.#.....#.#.#.#.#.....#.#.#.....#.#.#.#.#.....",
+    "###.###.#.###.###.###.#.###.###.#.###.###.###.#.",
+    "..#.#.#.#...#...#.#.#.#...#.#.#.#...#...#.#.#.#.",
+    "#.###.###.###.#.###.###.#.###.###.###.#.###.###.",
+    "#...#...#.#...#...#...#.#...#...#.#...#...#...#.",
+    "###.#.###.###.###.#.###.###.#.###.###.###.#.###.",
+    "#...#.#.....#...#.#.....#...#.#.....#...#.#....."
+  ]),
+  hazard: asciiToGrid([
+    "###...###...###...############...###...###...###",
+    ".###...###...###..#..........#..###...###...###.",
+    "..###...###...###.#....##....#.###...###...###..",
+    "...###...###...####...####...####...###...###...",
+    "#...###...###...###..##..##..###...###...###...#",
+    "##...###...###...##..##..##..##...###...###...##",
+    "###...###...###...#.##....##.#...###...###...###",
+    ".###...###...###..#.########.#..###...###...###.",
+    "..###...###...###.#....##....#.###...###...###..",
+    "...###...###...####...####...####...###...###...",
+    "#...###...###...###..........###...###...###...#",
+    "##...###...###...############...###...###...###."
+  ]),
+  reticle: asciiToGrid([
+    "######....#...#...#..######..#...#...#....######",
+    "#.........#.......#..#....#..#.......#.........#",
+    "#..###...............#....#...............###..#",
+    "#..#......####......########......####......#..#",
+    "..........#.......##...##...##.......#..........",
+    "####..###.#....#######.##.#######....#.###..####",
+    "####..###.#....#######.##.#######....#.###..####",
+    "..........#.......##...##...##.......#..........",
+    "#..#......####......########......####......#..#",
+    "#..###...............#....#...............###..#",
+    "#.........#.......#..#....#..#.......#.........#",
+    "######....#...#...#..######..#...#...#....######"
+  ]),
+  optics: asciiToGrid([
+    "####..####..####..####..####..####..####..####..",
+    "..####..####..####..####..####..####..####..####",
+    "....#........##########..##########........#....",
+    "...###......###########..###########......###...",
+    "..#.#.#....####....####..####....####....#.#.#..",
+    ".##.#.##...###..##..###..###..##..###...##.#.##.",
+    ".##...##...###..##..###..###..##..###...##...##.",
+    "#########..####....####..####....####..#########",
+    "............###########..###########............",
+    ".............##########..##########.............",
+    "####..####..####..####..####..####..####..####..",
+    "..####..####..####..####..####..####..####..####"
+  ]),
+  helix: asciiToGrid([
+    "################################################",
+    "..####........####........####........####......",
+    ".##..##......##..##......##..##......##..##.....",
+    "##....##....##....##....##....##....##....##....",
+    "#..##..##..##..##..##..##..##..##..##..##..##..#",
+    "..####..####..####..####..####..####..####..####",
+    "####..####..####..####..####..####..####..####..",
+    "#..##..##..##..##..##..##..##..##..##..##..##..#",
+    "....##....##....##....##....##....##....##....##",
+    ".....##..##......##..##......##..##......##..##.",
+    "......####........####........####........####..",
+    "################################################"
+  ])
+};
+
+const PRESETS = {
+  telemetry_tape: {
+    grid: () => hcatGrids(SCREENS.ecg, SCREENS.ecg, SCREENS.conduit, SCREENS.synth, SCREENS.reticle, SCREENS.hex, SCREENS.hazard, SCREENS.helix),
+    mode: 3, modeName: 'LEFT', speed: 150, theme: '', label: 'STATE // TAPE-08'
+  },
+  ecg: {
+    grid: () => hcatGrids(SCREENS.ecg, SCREENS.ecg, SCREENS.helix, SCREENS.ecg),
+    mode: 3, modeName: 'LEFT', speed: 160, theme: '', label: 'STATE // BIO-ECG'
+  },
+  synth: {
+    grid: () => hcatGrids(SCREENS.synth, SCREENS.helix, SCREENS.synth, SCREENS.conduit),
+    mode: 3, modeName: 'LEFT', speed: 240, theme: '', label: 'STATE // SYN-OSC'
+  },
+  conduit: {
+    grid: () => SCREENS.conduit.map(r => [...r]),
+    mode: 6, modeName: 'DOWN', speed: 210, theme: '', label: 'STATE // BUS-FLOW'
+  },
+  hex: {
+    grid: () => SCREENS.hex.map(r => [...r]),
+    mode: 7, modeName: 'SNOW', speed: 230, theme: 'theme-ice', label: 'STATE // ICE-HEX'
+  },
+  hazard: {
+    grid: () => hcatGrids(SCREENS.hazard, SCREENS.optics, SCREENS.hazard, SCREENS.hex),
+    mode: 3, modeName: 'LEFT', speed: 190, theme: 'theme-hazard', label: 'STATE // HZD-OVL'
+  },
+  reticle: {
+    grid: () => SCREENS.reticle.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 100, theme: '', label: 'STATE // OPT-LCK'
+  },
+  optics: {
+    grid: () => SCREENS.optics.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 100, theme: 'theme-hazard', label: 'STATE // OPTICS'
+  }
+};
+
+function encodeGridToBytes(grid) {
+  const cols = grid[0].length;
+  const byteMap = [0, 2, 3, 5, 6, 8];
+  const nibbleMap = [1, 1, 4, 4, 7, 7];
+  const out = [];
+
+  for (let sc = 0; sc < cols; sc += 6) {
+    const seg = [0,0,0,0,0,0,0,0,0];
+    for (let lc = 0; lc < 6; lc++) {
+      const c = sc + lc;
+      let bval = 0;
+      for (let r = 0; r < 8; r++) {
+        if (c < cols && grid[r][c]) bval |= (1 << (7 - r));
+      }
+      seg[byteMap[lc]] = bval;
+
+      let nval = 0;
+      for (let r = 8; r < 12; r++) {
+        if (c < cols && grid[r][c]) nval |= (1 << (11 - r));
+      }
+      const bidx = nibbleMap[lc];
+      if (lc % 2 === 0) seg[bidx] |= (nval << 4);
+      else seg[bidx] |= nval;
+    }
+    out.push(...seg);
+  }
+  return new Uint8Array(out);
+}
+
+// ============================================================================
+// 3. Web Bluetooth Controller (Service 0xFEE9 / d44bc439...)
+// ============================================================================
+const SERVICE_UUID = "0000fee9-0000-1000-8000-00805f9b34fb";
+const COMMAND_UUID = "d44bc439-abfd-45a2-b575-925416129600";
+const UPLOAD_UUID  = "d44bc439-abfd-45a2-b575-92541612960a";
+const NOTIFY_UUID  = "d44bc439-abfd-45a2-b575-925416129601";
+
+let bleDevice = null;
+let cmdChar = null;
+let uploadChar = null;
+let badgePowerOn = true;
+let isTransmitting = false;
+
+let currentGrid = PRESETS.telemetry_tape.grid();
+let currentMode = 3;
+let currentModeName = 'LEFT';
+let currentPresetKey = 'telemetry_tape';
+
+function logMsg(msg) {
+  document.getElementById('logBar').textContent = msg;
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function connectBadge() {
+  if (!navigator.bluetooth) {
+    logMsg("ERR // WEB BLUETOOTH REQUIRES HTTPS OR CHROME ANDROID");
+    alert("Web Bluetooth is unavailable on plain HTTP. Open via the HTTPS link from serve_hud.py or enable chrome://flags/#unsafely-treat-insecure-origin-as-secure");
+    return;
+  }
+  try {
+    logMsg("SCANNING FOR NODE [0000FEE9 / DSD]...");
+    bleDevice = await navigator.bluetooth.requestDevice({
+      filters: [
+        { services: [SERVICE_UUID] },
+        { namePrefix: "DSD" },
+        { namePrefix: "LED" }
+      ],
+      optionalServices: [SERVICE_UUID]
+    });
+    bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
+    logMsg("CONNECTING GATT...");
+    const server = await bleDevice.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE_UUID);
+    cmdChar = await service.getCharacteristic(COMMAND_UUID);
+    uploadChar = await service.getCharacteristic(UPLOAD_UUID);
+
+    try {
+      const notifyChar = await service.getCharacteristic(NOTIFY_UUID);
+      await notifyChar.startNotifications();
+    } catch (e) {}
+
+    const pill = document.getElementById('bleStatus');
+    pill.textContent = "BLE: LINKED";
+    pill.classList.add('connected');
+    document.getElementById('btnConnect').textContent = "RE-SYNC";
+    logMsg("LINK ESTABLISHED // " + (bleDevice.name || "NODE-12X48"));
+    requestWakeLock();
+  } catch (err) {
+    logMsg("BLE ERR // " + err.message);
+  }
+}
+
+function onDisconnected() {
+  const pill = document.getElementById('bleStatus');
+  pill.textContent = "BLE: OFFLINE";
+  pill.classList.remove('connected');
+  cmdChar = null;
+  uploadChar = null;
+  logMsg("NODE DISCONNECTED // RUNNING AUTONOMOUSLY");
+}
+
+async function sendCommand(pkt) {
+  if (!cmdChar) return false;
+  await cmdChar.writeValueWithResponse(pkt);
+  return true;
+}
+
+async function relayToServer(payload) {
+  try {
+    const res = await fetch('/api/tx', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      logMsg("TX VIA LOCAL RELAY // OK");
+      return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+async function transmitCurrentGrid() {
+  if (!cmdChar || !uploadChar) {
+    const speed = parseInt(document.getElementById('rngSpeed').value, 10);
+    const light = parseInt(document.getElementById('rngLight').value, 10);
+    const txInd = document.getElementById('txIndicator');
+    txInd.textContent = "TX // RELAY";
+    const ok = await relayToServer({
+      action: 'upload',
+      grid: currentGrid,
+      mode: currentMode,
+      speed: speed,
+      light: light
+    });
+    txInd.textContent = ok ? "TX // OK" : "LOCAL";
+    if (!ok) logMsg("LOCAL PREVIEW UPDATED (TAP [LINK NODE] FOR DIRECT BLE)");
+    return;
+  }
+  if (isTransmitting) return;
+  isTransmitting = true;
+  const txInd = document.getElementById('txIndicator');
+  txInd.textContent = "TX // BUSY";
+
+  try {
+    const rawData = encodeGridToBytes(currentGrid);
+    const len = rawData.length;
+    logMsg(`TX DATS // ${len} BYTES (${currentGrid[0].length}x12)...`);
+
+    await cmdChar.writeValueWithResponse(buildCommandPacket("DATS", (len >> 8) & 0xff, len & 0xff, 0, 0));
+    await sleep(160);
+
+    for (let off = 0; off < len; off += 15) {
+      const chunk = rawData.slice(off, off + 15);
+      const plain = new Uint8Array(16);
+      plain[0] = chunk.length;
+      plain.set(chunk, 1);
+      const enc = aes128EncryptBlock(plain);
+      if (uploadChar.writeValueWithoutResponse) {
+        await uploadChar.writeValueWithoutResponse(enc);
+      } else {
+        await uploadChar.writeValue(enc);
+      }
+      await sleep(14);
+    }
+
+    await cmdChar.writeValueWithResponse(buildCommandPacket("DATCP"));
+    await sleep(180);
+
+    const speed = parseInt(document.getElementById('rngSpeed').value, 10);
+    const light = parseInt(document.getElementById('rngLight').value, 10);
+
+    await cmdChar.writeValueWithResponse(buildCommandPacket("MODE", currentMode));
+    await sleep(80);
+    await cmdChar.writeValueWithResponse(buildCommandPacket("SPEED", speed));
+    await sleep(80);
+    await cmdChar.writeValueWithResponse(buildCommandPacket("LIGHT", light));
+
+    txInd.textContent = "TX // OK";
+    logMsg(`TX COMPLETE // ${currentGrid[0].length}x12 MODE=${currentModeName} SPD=${speed}`);
+  } catch (err) {
+    txInd.textContent = "TX // ERR";
+    logMsg("TX ERR // " + err.message);
+  } finally {
+    isTransmitting = false;
+  }
+}
+
+async function selectPreset(key, btnEl) {
+  currentPresetKey = key;
+  const p = PRESETS[key];
+  currentGrid = p.grid();
+  currentMode = p.mode;
+  currentModeName = p.modeName;
+
+  document.body.className = p.theme;
+  document.getElementById('activeStateLabel').textContent = p.label;
+  document.getElementById('modeLabel').textContent = `MODE: ${p.modeName} (${p.mode})`;
+  document.getElementById('rngSpeed').value = p.speed;
+  document.getElementById('valSpeed').textContent = p.speed;
+
+  if (btnEl) {
+    document.querySelectorAll('.cyber-panel button').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+
+  drawLedMatrix();
+  await transmitCurrentGrid();
+}
+
+async function setBadgeMode(modeVal, name) {
+  currentMode = modeVal;
+  currentModeName = name;
+  document.getElementById('modeLabel').textContent = `MODE: ${name} (${modeVal})`;
+  if (cmdChar) {
+    await sendCommand(buildCommandPacket("MODE", modeVal));
+    logMsg(`VECTOR SET // ${name} (${modeVal})`);
+  } else {
+    await relayToServer({ action: 'command', cmd: 'MODE', arg: modeVal });
+  }
+}
+
+async function setBadgeSpeed(val) {
+  const v = parseInt(val, 10);
+  if (cmdChar) {
+    await sendCommand(buildCommandPacket("SPEED", v));
+    logMsg(`VELOCITY SET // ${v}`);
+  } else {
+    await relayToServer({ action: 'command', cmd: 'SPEED', arg: v });
+  }
+}
+
+async function setBadgeLight(val) {
+  const v = parseInt(val, 10);
+  if (cmdChar) {
+    await sendCommand(buildCommandPacket("LIGHT", v));
+    logMsg(`LUMENS SET // ${v}`);
+  } else {
+    await relayToServer({ action: 'command', cmd: 'LIGHT', arg: v });
+  }
+}
+
+async function togglePower() {
+  badgePowerOn = !badgePowerOn;
+  if (cmdChar) {
+    await sendCommand(buildCommandPacket(badgePowerOn ? "LEDON" : "LEDOFF"));
+    logMsg(badgePowerOn ? "NODE POWER // ONLINE" : "NODE POWER // STANDBY");
+  } else {
+    await relayToServer({ action: 'command', cmd: badgePowerOn ? 'LEDON' : 'LEDOFF' });
+  }
+}
+
+// ============================================================================
+// 4. Interactive 48x12 LED Matrix Mirror & Editor
+// ============================================================================
+const ledCanvas = document.getElementById('ledCanvas');
+const ledCtx = ledCanvas.getContext('2d');
+
+function drawLedMatrix() {
+  const cols = currentGrid[0].length;
+  document.getElementById('gridDimLabel').textContent = `${cols}x12 PX`;
+  const viewCols = 48; // Preview first 48x12 screen (or touch-edit 48x12)
+  ledCtx.fillStyle = '#030407';
+  ledCtx.fillRect(0, 0, ledCanvas.width, ledCanvas.height);
+
+  const cellW = ledCanvas.width / viewCols;
+  const cellH = ledCanvas.height / 12;
+  const priColor = getComputedStyle(document.body).getPropertyValue('--pri').trim() || '#fcee0a';
+
+  for (let r = 0; r < 12; r++) {
+    for (let c = 0; c < viewCols; c++) {
+      const on = currentGrid[r][c];
+      ledCtx.fillStyle = on ? priColor : '#121622';
+      ledCtx.beginPath();
+      ledCtx.arc(c * cellW + cellW / 2, r * cellH + cellH / 2, Math.min(cellW, cellH) * 0.36, 0, Math.PI * 2);
+      ledCtx.fill();
+    }
+  }
+}
+
+let paintVal = 1;
+let isPainting = false;
+
+function handleMatrixPointer(e, start) {
+  const rect = ledCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  const c = Math.floor(((clientX - rect.left) / rect.width) * 48);
+  const r = Math.floor(((clientY - rect.top) / rect.height) * 12);
+  if (r >= 0 && r < 12 && c >= 0 && c < 48) {
+    if (start) paintVal = currentGrid[r][c] ? 0 : 1;
+    currentGrid[r][c] = paintVal;
+    drawLedMatrix();
+  }
+}
+
+ledCanvas.addEventListener('pointerdown', e => { isPainting = true; handleMatrixPointer(e, true); });
+ledCanvas.addEventListener('pointermove', e => { if (isPainting) handleMatrixPointer(e, false); });
+window.addEventListener('pointerup', () => { isPainting = false; });
+
+function clearSingleScreen() {
+  currentGrid = Array.from({length: 12}, () => Array(48).fill(0));
+  currentMode = 1;
+  currentModeName = 'STATIC';
+  drawLedMatrix();
+}
+
+function invertCurrentGrid() {
+  currentGrid = currentGrid.map(row => row.map(px => px ? 0 : 1));
+  drawLedMatrix();
+}
+
+// ============================================================================
+// 5. Live Diegetic Wrist HUD Animation (Oscilloscope, Hex Stream & Wake Lock)
+// ============================================================================
+const scopeCanvas = document.getElementById('scopeCanvas');
+const scopeCtx = scopeCanvas.getContext('2d');
+let phase = 0;
+
+function animateHud() {
+  phase += 0.12;
+  const w = scopeCanvas.width, h = scopeCanvas.height;
+  scopeCtx.fillStyle = 'rgba(3, 4, 6, 0.28)';
+  scopeCtx.fillRect(0, 0, w, h);
+
+  const priColor = getComputedStyle(document.body).getPropertyValue('--pri').trim() || '#fcee0a';
+  scopeCtx.strokeStyle = priColor;
+  scopeCtx.lineWidth = 1.8;
+  scopeCtx.beginPath();
+
+  for (let x = 0; x < w; x++) {
+    let y = h / 2;
+    const pos = (x + Math.floor(phase * 18)) % 64;
+    if (currentPresetKey === 'synth' || currentPresetKey === 'conduit') {
+      y += Math.sin(x * 0.18 + phase * 3) * 18 * Math.cos(x * 0.04 - phase);
+    } else if (currentPresetKey === 'hazard') {
+      y += ((Math.sin(x * 0.4 + phase * 5) > 0 ? 1 : -1) * 16) + (Math.random() - 0.5) * 10;
+    } else {
+      // Diegetic ECG waveform
+      if (pos === 20) y -= 6;
+      else if (pos === 24) y += 8;
+      else if (pos === 27) y -= 28;
+      else if (pos === 29) y += 22;
+      else if (pos === 34) y -= 9;
+      else y += Math.sin(x * 0.08 + phase) * 2;
+    }
+    if (x === 0) scopeCtx.moveTo(x, y);
+    else scopeCtx.lineTo(x, y);
+  }
+  scopeCtx.stroke();
+  requestAnimationFrame(animateHud);
+}
+
+const hexLines = [];
+function updateHexStream() {
+  let row = "";
+  for (let i = 0; i < 4; i++) {
+    row += Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0') + " ";
+  }
+  hexLines.push(row.trim());
+  if (hexLines.length > 6) hexLines.shift();
+  document.getElementById('hexBox').textContent = hexLines.join("\n");
+
+  // Subtle jitter on vitals
+  const baseBpm = currentPresetKey === 'hazard' ? 196 : 172;
+  document.getElementById('valBpm').textContent = baseBpm + Math.floor(Math.random() * 7);
+  document.getElementById('valLoad').textContent = (80 + Math.floor(Math.random() * 18)) + "%";
+}
+
+async function requestWakeLock() {
+  try {
+    if ('wakeLock' in navigator) {
+      await navigator.wakeLock.request('screen');
+    }
+  } catch (e) {}
+}
+
+function toggleFullscreen() {
+  requestWakeLock();
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
+drawLedMatrix();
+animateHud();
+setInterval(updateHexStream, 220);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>

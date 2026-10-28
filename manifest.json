@@ -1,0 +1,19 @@
+{
+  "name": "SYS//09 Cyber-Telemetry Deck",
+  "short_name": "SYS//09",
+  "description": "Diegetic BLE Telemetry & Matrix Controller",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#050508",
+  "theme_color": "#fcee0a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
