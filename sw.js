@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sys09-hud-v2';
+const CACHE_NAME = 'sys09-hud-v3';
 const ASSETS = [
   './',
   './index.html',

@@ -17,13 +17,17 @@
     --sec: #00f0ff;
     --hzd: #ff003c;
     --ok: #00ff66;
-    --dim: #3a4152;
+    --dim: #323949;
     --text: #e8f0f8;
   }
   * {
     box-sizing: border-box;
     user-select: none;
     -webkit-user-select: none;
+  }
+  input[type=text] {
+    user-select: text;
+    -webkit-user-select: text;
   }
   body {
     margin: 0;
@@ -35,7 +39,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 7px;
     background-image:
       linear-gradient(rgba(252, 238, 10, 0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
@@ -54,28 +58,26 @@
     --sec: #00aa44;
   }
 
-  /* Cyber-frame panel with angled corners */
   .cyber-panel {
     background: var(--panel);
     border: 1px solid var(--pri);
     position: relative;
     padding: 8px 10px;
     clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
-    box-shadow: inset 0 0 12px rgba(252, 238, 10, 0.06);
+    box-shadow: inset 0 0 12px rgba(252, 238, 10, 0.05);
   }
   .panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 11px;
-    letter-spacing: 1.5px;
+    font-size: 10px;
+    letter-spacing: 1.4px;
     border-bottom: 1px solid var(--dim);
     padding-bottom: 4px;
     margin-bottom: 6px;
     color: var(--sec);
   }
 
-  /* Top status bar */
   .top-bar {
     display: flex;
     justify-content: space-between;
@@ -99,30 +101,34 @@
     color: var(--ok);
   }
 
-  /* Action buttons */
   .btn-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
   }
-  .btn-grid-2 {
+  .btn-row-4 {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
   }
   button {
     background: #10141f;
     color: var(--pri);
     border: 1px solid var(--pri);
-    padding: 9px 6px;
+    padding: 9px 4px;
     font-family: inherit;
     font-size: 11px;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 0.7px;
     cursor: pointer;
     text-transform: uppercase;
     clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%);
-    transition: all 0.12s ease;
+    transition: all 0.1s ease;
+  }
+  button.big {
+    padding: 12px 4px;
+    font-size: 13px;
+    letter-spacing: 1.2px;
   }
   button:active, button.active {
     background: var(--pri);
@@ -147,6 +153,63 @@
     color: #000;
     box-shadow: 0 0 10px var(--hzd);
   }
+  button.ok {
+    border-color: var(--ok);
+    color: var(--ok);
+  }
+  button.ok:active, button.ok.active {
+    background: var(--ok);
+    color: #000;
+    box-shadow: 0 0 10px var(--ok);
+  }
+
+  /* Category Tabs */
+  .tab-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  .tab-btn {
+    background: #080a10;
+    border: 1px solid var(--dim);
+    color: #8a96aa;
+    padding: 8px 2px;
+    font-size: 10px;
+  }
+  .tab-btn.active {
+    background: var(--pri);
+    color: #000;
+    border-color: var(--pri);
+    box-shadow: 0 0 8px rgba(252, 238, 10, 0.35);
+  }
+  .tab-pane {
+    display: none;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+
+  /* Custom quick message input */
+  .msg-form {
+    display: flex;
+    gap: 6px;
+    margin-top: 7px;
+  }
+  .msg-form input {
+    flex: 1;
+    background: #04060a;
+    border: 1px solid var(--sec);
+    color: var(--pri);
+    font-family: inherit;
+    font-size: 12px;
+    padding: 7px 8px;
+    text-transform: uppercase;
+    outline: none;
+  }
+  .msg-form button {
+    padding: 7px 12px;
+    flex-shrink: 0;
+  }
 
   /* Live Telemetry Oscilloscope + Hex Dump */
   .telemetry-grid {
@@ -156,16 +219,16 @@
   }
   canvas#scopeCanvas {
     width: 100%;
-    height: 76px;
+    height: 68px;
     background: #030406;
     border: 1px solid var(--dim);
     display: block;
   }
   .hex-box {
     font-size: 9px;
-    line-height: 1.25;
+    line-height: 1.22;
     color: var(--sec);
-    height: 76px;
+    height: 68px;
     overflow: hidden;
     background: #030406;
     border: 1px solid var(--dim);
@@ -173,7 +236,6 @@
     white-space: pre;
   }
 
-  /* Vitals & Bars */
   .vitals-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -183,19 +245,18 @@
   .vital-card {
     background: #06080d;
     border-left: 2px solid var(--pri);
-    padding: 4px 6px;
+    padding: 3px 6px;
   }
   .vital-label {
     font-size: 9px;
     color: var(--sec);
   }
   .vital-val {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     color: var(--pri);
   }
 
-  /* 48x12 LED Matrix Mirror */
   .matrix-wrap {
     overflow-x: auto;
     background: #030407;
@@ -211,7 +272,6 @@
     touch-action: none;
   }
 
-  /* Sliders */
   .slider-row {
     display: flex;
     align-items: center;
@@ -232,7 +292,6 @@
     text-align: right;
   }
 
-  /* Log console */
   .log-bar {
     font-size: 10px;
     color: var(--sec);
@@ -260,14 +319,14 @@
     <button id="btnPower" class="hzd" onclick="togglePower()">NODE PWR</button>
   </div>
 
-  <!-- LIVE OSCILLOSCOPE + HEX STREAM + VITALS -->
+  <!-- LIVE OSCILLOSCOPE + HEX STREAM + VITALS (WITH REAL PHONE BATTERY) -->
   <div class="cyber-panel">
     <div class="panel-header">
       <span>BIO // NEURAL CONDUIT</span>
       <span id="activeStateLabel">STATE // TAPE-08</span>
     </div>
     <div class="telemetry-grid">
-      <canvas id="scopeCanvas" width="240" height="76"></canvas>
+      <canvas id="scopeCanvas" width="240" height="68"></canvas>
       <div class="hex-box" id="hexBox"></div>
     </div>
     <div class="vitals-row">
@@ -284,37 +343,87 @@
         <div class="vital-val" id="valLoad">82%</div>
       </div>
       <div class="vital-card">
-        <div class="vital-label">CORE</div>
-        <div class="vital-val" id="valTemp">39.1°</div>
+        <div class="vital-label">CELL</div>
+        <div class="vital-val" id="valBatt">--%</div>
       </div>
     </div>
   </div>
 
-  <!-- DIEGETIC PATTERN PRESETS (1-TAP BEAM TO BADGE) -->
-  <div class="cyber-panel">
+  <!-- MODE NAVIGATION TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('tabComms', this)">COMMS</button>
+    <button class="tab-btn" onclick="switchTab('tabEggs', this)">EASTER</button>
+    <button class="tab-btn" onclick="switchTab('tabTelemetry', this)">HUD FX</button>
+    <button class="tab-btn" onclick="switchTab('tabPad', this)">PAD/MOD</button>
+  </div>
+
+  <!-- TAB 1: INSTANT PARTY ANSWERS & REACTIONS -->
+  <div id="tabComms" class="cyber-panel tab-pane active">
     <div class="panel-header">
-      <span>OPTIC MATRIX // PRESETS</span>
+      <span>VOICE SYNTH // QUICK REPLIES</span>
       <span id="txIndicator">READY</span>
     </div>
     <div class="btn-row">
-      <button onclick="selectPreset('telemetry_tape', this)" class="active">01 // TAPE-8</button>
-      <button onclick="selectPreset('ecg', this)">02 // BIO-ECG</button>
-      <button onclick="selectPreset('synth', this)">03 // SYN-OSC</button>
-      <button onclick="selectPreset('conduit', this)">04 // BUS-FLOW</button>
-      <button onclick="selectPreset('hex', this)" class="sec">05 // ICE-HEX</button>
-      <button onclick="selectPreset('hazard', this)" class="hzd">06 // HZD-OVL</button>
+      <button class="big ok preset-btn" onclick="selectPreset('ans_yes', this)">✓ YES</button>
+      <button class="big hzd preset-btn" onclick="selectPreset('ans_no', this)">✕ NO</button>
+      <button class="big sec preset-btn" onclick="selectPreset('ans_maybe', this)">? MAYBE</button>
     </div>
     <div class="btn-row" style="margin-top:6px;">
-      <button onclick="selectPreset('reticle', this)">07 // OPT-LCK</button>
-      <button onclick="selectPreset('optics', this)" class="hzd">08 // OPTICS</button>
-      <button onclick="selectPreset('matrix', this)" class="sec">09 // MTX-RAIN</button>
+      <button class="hzd preset-btn" onclick="selectPreset('nervous', this)">♥ NERVOUS</button>
+      <button class="hzd preset-btn" onclick="selectPreset('flatline', this)">💀 FLATLINE</button>
+      <button class="sec preset-btn" onclick="selectPreset('drink', this)">🍸 DRINK?</button>
+      <button class="preset-btn" onclick="selectPreset('loud', this)">🔊 WHAT?!</button>
+      <button class="ok preset-btn" onclick="selectPreset('nice', this)">😎 NICE!</button>
+      <button class="sec preset-btn" onclick="selectPreset('loading', this)">⏳ 99%...</button>
+    </div>
+    <form class="msg-form" onsubmit="sendCustomText(event)">
+      <input type="text" id="customMsgInput" placeholder="TYPE LIVE MESSAGE..." maxlength="42">
+      <button type="submit" class="sec">BEAM</button>
+    </form>
+  </div>
+
+  <!-- TAB 2: POP CULTURE & SCI-FI EASTER EGGS -->
+  <div id="tabEggs" class="cyber-panel tab-pane">
+    <div class="panel-header">
+      <span>ARCHIVE // POP-CULTURE EASTER EGGS</span>
+      <span>9 PAYLOADS</span>
+    </div>
+    <div class="btn-row">
+      <button class="preset-btn" onclick="selectPreset('bttf', this)">⚡ 1.21 GW</button>
+      <button class="hzd preset-btn" onclick="selectPreset('over9000', this)">💥 >9000!</button>
+      <button class="ok preset-btn" onclick="selectPreset('rabbit', this)">🐇 RABBIT</button>
+      <button class="sec preset-btn" onclick="selectPreset('arcade', this)">👾 ARCADE</button>
+      <button class="preset-btn" onclick="selectPreset('konami', this)">🎮 KONAMI</button>
+      <button class="sec preset-btn" onclick="selectPreset('shades', this)">🕶 SHADES</button>
+      <button class="hzd preset-btn" onclick="selectPreset('hal9000', this)">👁 HAL9000</button>
+      <button class="hzd preset-btn" onclick="selectPreset('err404', this)">⚠ 404 SOUL</button>
+      <button class="ok preset-btn" onclick="selectPreset('quest', this)">❗ QUEST</button>
     </div>
   </div>
 
-  <!-- 48x12 LIVE MATRIX PREVIEW & TOUCH PAD -->
-  <div class="cyber-panel">
+  <!-- TAB 3: DIEGETIC CYBERPUNK HARDWARE PATTERNS -->
+  <div id="tabTelemetry" class="cyber-panel tab-pane">
     <div class="panel-header">
-      <span>NODE MIRROR // 48x12 (TOUCH TO EDIT)</span>
+      <span>OPTIC MATRIX // DIEGETIC FX</span>
+      <span>NO TEXT</span>
+    </div>
+    <div class="btn-row">
+      <button class="preset-btn active" onclick="selectPreset('telemetry_tape', this)">01 // TAPE-8</button>
+      <button class="preset-btn" onclick="selectPreset('ecg', this)">02 // BIO-ECG</button>
+      <button class="preset-btn" onclick="selectPreset('synth', this)">03 // SYN-OSC</button>
+      <button class="preset-btn" onclick="selectPreset('conduit', this)">04 // BUS-FLOW</button>
+      <button class="sec preset-btn" onclick="selectPreset('hex', this)">05 // ICE-HEX</button>
+      <button class="hzd preset-btn" onclick="selectPreset('hazard', this)">06 // HZD-OVL</button>
+      <button class="preset-btn" onclick="selectPreset('reticle', this)">07 // OPT-LCK</button>
+      <button class="hzd preset-btn" onclick="selectPreset('optics', this)">08 // OPTICS</button>
+      <button class="ok preset-btn" onclick="selectPreset('matrix', this)">09 // MTX-RAIN</button>
+    </div>
+  </div>
+
+  <!-- TAB 4: TOUCH PIXEL PAD + VECTOR / SPEED / LUMENS -->
+  <div id="tabPad" class="cyber-panel tab-pane">
+    <div class="panel-header">
+      <span>NODE MIRROR // 48x12 TOUCH PAD</span>
       <span id="gridDimLabel">384x12 PX</span>
     </div>
     <div class="matrix-wrap">
@@ -323,13 +432,9 @@
     <div class="btn-row" style="margin-top:6px;">
       <button onclick="clearSingleScreen()">CLR 48x12</button>
       <button onclick="invertCurrentGrid()">INVERT</button>
-      <button class="sec" onclick="transmitCurrentGrid()">BEAM MATRIX</button>
+      <button class="sec" onclick="transmitCurrentGrid()">BEAM PAD</button>
     </div>
-  </div>
-
-  <!-- HARDWARE VECTOR / SPEED / BRIGHTNESS CONTROLS -->
-  <div class="cyber-panel">
-    <div class="panel-header">
+    <div class="panel-header" style="margin-top:8px;">
       <span>VECTOR // MODULATION</span>
       <span id="modeLabel">MODE: LEFT (3)</span>
     </div>
@@ -353,12 +458,11 @@
     </div>
   </div>
 
-  <div class="log-bar" id="logBar">SYS//09 INITIALIZED — TAP [LINK NODE] FOR BLE HANDSHAKE</div>
+  <div class="log-bar" id="logBar">SYS//09 READY — TAP [LINK NODE] FOR BLE HANDSHAKE</div>
 
 <script>
 // ============================================================================
 // 1. Pure-JS AES-128-ECB Implementation (Zero External Dependencies)
-//    Verified against idealLED key: 34 52 2A 5B 7A 6E 49 2C 08 09 0A 9D 8D 2A 23 F8
 // ============================================================================
 const AES_KEY = [
   0x34, 0x52, 0x2A, 0x5B, 0x7A, 0x6E, 0x49, 0x2C,
@@ -383,6 +487,7 @@ const SBOX = [
   0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
   0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
 ];
+SBOX[57] = 0x12; // ensure strict hex 0x12 at index 57
 const RCON = [0x00,0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36];
 
 function xtime(a) { return ((a << 1) ^ (((a >> 7) & 1) * 0x1b)) & 0xff; }
@@ -413,13 +518,10 @@ function aes128EncryptBlock(rawBytes) {
   for (let i = 0; i < 16; i++) s[i] = (i < rawBytes.length ? rawBytes[i] : 0) ^ EXPANDED_KEY[i];
 
   for (let round = 1; round <= 10; round++) {
-    // SubBytes
     for (let i = 0; i < 16; i++) s[i] = SBOX[s[i]];
-    // ShiftRows
     let t = s[1]; s[1] = s[5]; s[5] = s[9]; s[9] = s[13]; s[13] = t;
     t = s[2]; s[2] = s[10]; s[10] = t; t = s[6]; s[6] = s[14]; s[14] = t;
     t = s[15]; s[15] = s[11]; s[11] = s[7]; s[7] = s[3]; s[3] = t;
-    // MixColumns
     if (round < 10) {
       for (let c = 0; c < 16; c += 4) {
         const a0 = s[c], a1 = s[c+1], a2 = s[c+2], a3 = s[c+3];
@@ -430,7 +532,6 @@ function aes128EncryptBlock(rawBytes) {
         s[c+3] ^= h ^ xtime(a3 ^ a0);
       }
     }
-    // AddRoundKey
     const ro = round * 16;
     for (let i = 0; i < 16; i++) s[i] ^= EXPANDED_KEY[ro + i];
   }
@@ -445,7 +546,7 @@ function buildCommandPacket(cmdStr, ...args) {
 }
 
 // ============================================================================
-// 2. Diegetic 48x12 Pixel Screens & 6x12 Segment Encoder
+// 2. Pixel Font, Icons, Party Replies, Easter Eggs & Diegetic Screens
 // ============================================================================
 function asciiToGrid(lines) {
   const w = Math.max(...lines.map(l => l.length));
@@ -464,7 +565,334 @@ function hcatGrids(...grids) {
   return out;
 }
 
+function padOrTrimGrid(grid, maxCols = 384) {
+  const cols = grid[0].length;
+  if (cols > maxCols) return grid.map(r => r.slice(0, maxCols));
+  const rem = cols % 6 === 0 ? 0 : 6 - (cols % 6);
+  const target = Math.max(48, cols + rem);
+  return grid.map(r => r.concat(Array(target - r.length).fill(0)));
+}
+
+const FONT_5X8 = {
+  "A":[" ### ","#   #","#   #","#####","#   #","#   #","#   #","     "],
+  "B":["#### ","#   #","#   #","#### ","#   #","#   #","#### ","     "],
+  "C":[" ####","#    ","#    ","#    ","#    ","#    "," ####","     "],
+  "D":["#### ","#   #","#   #","#   #","#   #","#   #","#### ","     "],
+  "E":["#####","#    ","#    ","#### ","#    ","#    ","#####","     "],
+  "F":["#####","#    ","#    ","#### ","#    ","#    ","#    ","     "],
+  "G":[" ####","#    ","#    ","#  ##","#   #","#   #"," ####","     "],
+  "H":["#   #","#   #","#   #","#####","#   #","#   #","#   #","     "],
+  "I":[" ### ","  #  ","  #  ","  #  ","  #  ","  #  "," ### ","     "],
+  "J":["  ###","   # ","   # ","   # ","#  # ","#  # "," ##  ","     "],
+  "K":["#   #","#  # ","# #  ","##   ","# #  ","#  # ","#   #","     "],
+  "L":["#    ","#    ","#    ","#    ","#    ","#    ","#####","     "],
+  "M":["#   #","## ##","# # #","# # #","#   #","#   #","#   #","     "],
+  "N":["#   #","##  #","# # #","#  ##","#   #","#   #","#   #","     "],
+  "O":[" ### ","#   #","#   #","#   #","#   #","#   #"," ### ","     "],
+  "P":["#### ","#   #","#   #","#### ","#    ","#    ","#    ","     "],
+  "Q":[" ### ","#   #","#   #","#   #","# # #","#  # "," ## #","     "],
+  "R":["#### ","#   #","#   #","#### ","# #  ","#  # ","#   #","     "],
+  "S":[" ####","#    ","#    "," ### ","    #","    #","#### ","     "],
+  "T":["#####","  #  ","  #  ","  #  ","  #  ","  #  ","  #  ","     "],
+  "U":["#   #","#   #","#   #","#   #","#   #","#   #"," ### ","     "],
+  "V":["#   #","#   #","#   #","#   #","#   #"," # # ","  #  ","     "],
+  "W":["#   #","#   #","#   #","# # #","# # #","## ##","#   #","     "],
+  "X":["#   #","#   #"," # # ","  #  "," # # ","#   #","#   #","     "],
+  "Y":["#   #","#   #"," # # ","  #  ","  #  ","  #  ","  #  ","     "],
+  "Z":["#####","    #","   # ","  #  "," #   ","#    ","#####","     "],
+  "0":[" ### ","#  ##","# # #","# # #","##  #","#   #"," ### ","     "],
+  "1":["  #  "," ##  ","  #  ","  #  ","  #  ","  #  "," ### ","     "],
+  "2":[" ### ","#   #","    #","  ## "," #   ","#    ","#####","     "],
+  "3":["#### ","    #","    #"," ### ","    #","    #","#### ","     "],
+  "4":["#  # ","#  # ","#  # ","#####","   # ","   # ","   # ","     "],
+  "5":["#####","#    ","#    ","#### ","    #","    #","#### ","     "],
+  "6":[" ### ","#    ","#    ","#### ","#   #","#   #"," ### ","     "],
+  "7":["#####","    #","   # ","  #  ","  #  ","  #  ","  #  ","     "],
+  "8":[" ### ","#   #","#   #"," ### ","#   #","#   #"," ### ","     "],
+  "9":[" ### ","#   #","#   #"," ####","    #","    #"," ### ","     "],
+  "!":["  #  ","  #  ","  #  ","  #  ","  #  ","     ","  #  ","     "],
+  "?":[" ### ","#   #","    #","  ## ","  #  ","     ","  #  ","     "],
+  ":":["     ","  #  ","  #  ","     ","  #  ","  #  ","     ","     "],
+  ".":["     ","     ","     ","     ","     ","     ","  #  ","     "],
+  ",":["     ","     ","     ","     ","     ","  #  "," #   ","     "],
+  "'":["  #  ","  #  ","     ","     ","     ","     ","     ","     "],
+  "-":["     ","     ","     ","#####","     ","     ","     ","     "],
+  "+":["     ","  #  ","  #  ","#####","  #  ","  #  ","     ","     "],
+  "/":["    #","   # ","   # ","  #  "," #   "," #   ","#    ","     "],
+  "%":["##  #","## # ","  #  ","  #  "," # ##","#  ##","     ","     "],
+  ">":[" #   ","  #  ","   # ","    #","   # ","  #  "," #   ","     "],
+  "<":["   # ","  #  "," #   ","#    "," #   ","  #  ","   # ","     "],
+  "^":["  #  "," ### ","# # #","  #  ","  #  ","  #  ","  #  ","     "],
+  "v":["  #  ","  #  ","  #  ","  #  ","# # #"," ### ","  #  ","     "],
+  "[":[" ### "," #   "," #   "," #   "," #   "," #   "," ### ","     "],
+  "]":[" ### ","   # ","   # ","   # ","   # ","   # "," ### ","     "],
+  "(":["  ## "," #   "," #   "," #   "," #   "," #   ","  ## ","     "],
+  ")":[" ##  ","   # ","   # ","   # ","   # ","   # "," ##  ","     "],
+  "=":["     ","     ","#####","     ","#####","     ","     ","     "],
+  " ":["   ","   ","   ","   ","   ","   ","   ","   "]
+};
+
+function renderTextBanner(text, rails = true) {
+  const lines = Array(12).fill("");
+  const str = " " + text.toUpperCase() + " ";
+  for (const ch of str) {
+    const g = FONT_5X8[ch] || FONT_5X8[" "];
+    const w = g[0].length;
+    lines[0] += (rails ? "#" : " ").repeat(w + 1);
+    lines[1] += " ".repeat(w + 1);
+    for (let r = 0; r < 8; r++) lines[2 + r] += g[r].replace(/#/g, "#") + " ";
+    lines[10] += " ".repeat(w + 1);
+    lines[11] += (rails ? "#" : " ").repeat(w + 1);
+  }
+  return padOrTrimGrid(asciiToGrid(lines), 384);
+}
+
+// 12x12 Inline Pixel Icons for Combo Strips
+const ICONS = {
+  heart: asciiToGrid([
+    "..............",
+    "..###....###..",
+    ".#####..#####.",
+    "##############",
+    "##############",
+    "##############",
+    ".############.",
+    "..##########..",
+    "...########...",
+    "....######....",
+    ".....####.....",
+    "......##......"
+  ]),
+  skull: asciiToGrid([
+    "...########...",
+    "..##########..",
+    ".############.",
+    ".###..##..###.",
+    ".###..##..###.",
+    ".############.",
+    "..####..####..",
+    "..##########..",
+    "...##.##.##...",
+    "...##.##.##...",
+    "..............",
+    ".............."
+  ]),
+  rabbit: asciiToGrid([
+    "...##...##....",
+    "...##...##....",
+    "...##...##....",
+    "...###.###....",
+    "..#########...",
+    ".###.###.###..",
+    ".###########..",
+    "..#########...",
+    "...#######....",
+    "..#########...",
+    ".###########..",
+    ".............."
+  ]),
+  flux: asciiToGrid([
+    ".############.",
+    ".#..........#.",
+    ".#.##....##.#.",
+    ".#..##..##..#.",
+    ".#...####...#.",
+    ".#....##....#.",
+    ".#....##....#.",
+    ".#....##....#.",
+    ".#...####...#.",
+    ".#..........#.",
+    ".############.",
+    ".............."
+  ]),
+  hal: asciiToGrid([
+    "....######....",
+    "..##......##..",
+    ".#...####...#.",
+    "#...######...#",
+    "#..###..###..#",
+    "#..###..###..#",
+    "#..###..###..#",
+    "#...######...#",
+    ".#...####...#.",
+    "..##......##..",
+    "....######....",
+    ".............."
+  ]),
+  quest: asciiToGrid([
+    ".....####.....",
+    "....######....",
+    "....######....",
+    "....######....",
+    ".....####.....",
+    ".....####.....",
+    "......##......",
+    "..............",
+    ".....####.....",
+    ".....####.....",
+    "..............",
+    ".............."
+  ])
+};
+
 const SCREENS = {
+  // --- Instant 48x12 Static Party Replies ---
+  ans_yes: asciiToGrid([
+    "################################################",
+    "................................................",
+    "..........##....###...###.########...#######....",
+    ".........###.....###.###..########..#########...",
+    "........###.......#####...###.......###.........",
+    "..##...###.........###....#######....#######....",
+    ".###..###..........###....#######.....#######...",
+    "..######...........###....###..............###..",
+    "...####............###....########..#########...",
+    "....##.............###....########...#######....",
+    "................................................",
+    "################################################"
+  ]),
+  ans_no: asciiToGrid([
+    "###..###..###..###..###..###..###..###..###..###",
+    "................................................",
+    "..##....##......###....###...########...........",
+    "...##..##.......####...###..##########..........",
+    "....####........#####..###..###....###..........",
+    ".....##.........###.##.###..###....###..........",
+    "....####........###..#####..###....###..........",
+    "...##..##.......###...####..###....###..........",
+    "..##....##......###....###..##########..........",
+    "................###....###...########...........",
+    "................................................",
+    "###..###..###..###..###..###..###..###..###..###"
+  ]),
+  ans_maybe: asciiToGrid([
+    "##..##..##..##..##..##..##..##..##..##..##..##..",
+    "................................................",
+    "...##...##..####..##..##.#####..######..####....",
+    "...###.###.##..##.##..##.##..##.##.....##..##...",
+    "...#######.##..##..####..#####..#####.....##....",
+    "...##.#.##.######...##...#####..#####....##.....",
+    "...##...##.##..##...##...##..##.##.......##.....",
+    "...##...##.##..##...##...##..##.##..............",
+    "...##...##.##..##...##...#####..######...##.....",
+    "................................................",
+    "................................................",
+    "..##..##..##..##..##..##..##..##..##..##..##..##"
+  ]),
+  drink_static: asciiToGrid([
+    ".#########......................................",
+    "..#######.....####..####..###.#...#.#..#..###...",
+    "...#####......#...#.#...#..#..##..#.#.#..#...#..",
+    "....###.......#...#.#...#..#..#.#.#.##......#...",
+    ".....#........#...#.####...#..#..##.##.....#....",
+    ".....#........#...#.#.#....#..#...#.#.#....#....",
+    ".....#........#...#.#..#...#..#...#.#..#........",
+    ".....#........####..#...#.###.#...#.#..#...#....",
+    "...#####........................................",
+    "################################################",
+    "................................................",
+    "################################################"
+  ]),
+  loud_static: asciiToGrid([
+    "....##..#.......................................",
+    "...###...#....#...#.#..#..###..#####..###..##...",
+    ".#####.#..#...#...#.#..#.#...#...#...#...#.##...",
+    "######..#.#...#.#.#.####.#####...#.....##..##...",
+    "######..#.#...#.#.#.#..#.#...#...#.....#...##...",
+    ".#####.#..#...##.##.#..#.#...#...#..............",
+    "...###...#....#...#.#..#.#...#...#.....#...##...",
+    "....##..#.......................................",
+    "................................................",
+    "###..###..###..###..###..###..###..###..###..###",
+    "................................................",
+    ".###..###..###..###..###..###..###..###..###..##"
+  ]),
+  nice_static: asciiToGrid([
+    "################################################",
+    "................................................",
+    ".##################...#...#.###..####.#####.##..",
+    ".#######....#######...##..#..#..#.....#.....##..",
+    "..######....######....#.#.#..#..#.....####..##..",
+    "...#####....#####.....#..##..#..#.....#.....##..",
+    "......................#...#..#..#.....#.........",
+    ".....##......##.......#...#.###..####.#####.##..",
+    "......########..................................",
+    "................................................",
+    "................................................",
+    "################################################"
+  ]),
+  loading_static: asciiToGrid([
+    "##############################..................",
+    "#............................#...###...###..##.#",
+    "#.####################.......#..#...#.#...#.####",
+    "#.####################.......#..#...#.#...#...#.",
+    "#.####################.......#...####..####..#..",
+    "#.####################.......#......#.....#.#...",
+    "#.####################.......#..#...#.#...#.#.##",
+    "#.####################.......#...###...###..#.##",
+    "#............................#..................",
+    "##############################..................",
+    "................................................",
+    "##..##..##..##..##..##..##..##..##..##..##..##.."
+  ]),
+  panic_ecg: asciiToGrid([
+    "##..##..##..##..##..##..##..##..##..##..##..##..",
+    "...#.......#.......#.......#.......#.......#....",
+    "...#.......#.......#.......#.......#.......#....",
+    "..###.....###.....###.....###.....###.....###...",
+    "..#.#.....#.#.....#.#.....#.#.....#.#.....#.#...",
+    "..#.#..#..#.#..#..#.#..#..#.#..#..#.#..#..#.#...",
+    "###.#.###.#.#.###.#.#.###.#.#.###.#.#.###.#.#.##",
+    "....#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#.#...",
+    "....###.###.###.###.###.###.###.###.###.###.#...",
+    ".....#.......#.......#.......#.......#.......#..",
+    ".....#.......#.......#.......#.......#.......#..",
+    "##..##..##..##..##..##..##..##..##..##..##..##.."
+  ]),
+  flatline_strip: asciiToGrid([
+    "................................................",
+    ".......#........................................",
+    "......###.......................................",
+    "......#.#.......................................",
+    ".....##.#.......................................",
+    "######..#...####################################",
+    "........#..#....................................",
+    "........#.#.....................................",
+    "........###.....................................",
+    ".........#......................................",
+    "................................................",
+    "................................................"
+  ]),
+  arcade_strip: asciiToGrid([
+    "................................................",
+    "....#####.........######...............##.....##",
+    "..#########.....##########..............##...##.",
+    ".####...####...###..##..###.............#######.",
+    ".###....###....###..##..###............##.###.##",
+    ".########......############..##....##.##########",
+    ".######........############..##....##.#.#######.",
+    ".########......############...........#.#.....#.",
+    ".####...####...############............##.###...",
+    "..#########....##..####..##.....................",
+    "....#####......#...#..#...#.....................",
+    "................................................"
+  ]),
+  shades_strip: asciiToGrid([
+    "................................................",
+    "...##########...............####################",
+    "..##........##.............##..................#",
+    ".#..##....##..#...........#.########..########.#",
+    ".#..##....##..#...........#.########..########.#",
+    ".#............#...###.....#..######....######..#",
+    ".#............#..#####....#....................#",
+    ".#...######...#....#......#.....##########.....#",
+    "..##........##.............##................##.",
+    "...##########...............##################..",
+    "................................................",
+    "................................................"
+  ]),
+
+  // --- Original Diegetic Hardware Screens ---
   ecg: asciiToGrid([
     "#...#...#...#...#...#...#...#...#...#...#...#...",
     "........#...................#...................",
@@ -583,15 +1011,12 @@ function generateMatrixRainStrip(numScreens = 8) {
   const totalCols = 48 * numScreens;
   const grid = Array.from({length: 12}, () => Array(totalCols).fill(0));
   for (let col = 0; col < totalCols; col++) {
-    // Staggered vertical rain trails across columns
     if (Math.random() < 0.68) {
-      const dropLen = 3 + Math.floor(Math.random() * 6); // 3..8 px tall
+      const dropLen = 3 + Math.floor(Math.random() * 6);
       const startRow = Math.floor(Math.random() * 12);
       for (let i = 0; i < dropLen; i++) {
-        // Occasional tail flicker gap for authentic Matrix digital rain look
         if (i === dropLen - 2 && Math.random() < 0.45) continue;
-        const r = (startRow + i) % 12;
-        grid[r][col] = 1;
+        grid[(startRow + i) % 12][col] = 1;
       }
     }
   }
@@ -599,6 +1024,83 @@ function generateMatrixRainStrip(numScreens = 8) {
 }
 
 const PRESETS = {
+  // --- TAB 1: COMMS & PARTY REACTIONS ---
+  ans_yes: {
+    grid: () => SCREENS.ans_yes.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: 'theme-matrix', label: 'COMMS // YES'
+  },
+  ans_no: {
+    grid: () => SCREENS.ans_no.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: 'theme-hazard', label: 'COMMS // NO'
+  },
+  ans_maybe: {
+    grid: () => SCREENS.ans_maybe.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: 'theme-ice', label: 'COMMS // MAYBE'
+  },
+  nervous: {
+    grid: () => padOrTrimGrid(hcatGrids(ICONS.heart, SCREENS.panic_ecg, ICONS.heart, renderTextBanner("228 BPM // NERVOUS", true))),
+    mode: 3, modeName: 'LEFT', speed: 235, theme: 'theme-hazard', label: 'BIO // TACHYCARDIA'
+  },
+  flatline: {
+    grid: () => padOrTrimGrid(hcatGrids(SCREENS.flatline_strip, ICONS.skull, renderTextBanner("000 BPM // FLATLINE", false))),
+    mode: 3, modeName: 'LEFT', speed: 165, theme: 'theme-hazard', label: 'BIO // FLATLINE'
+  },
+  drink: {
+    grid: () => SCREENS.drink_static.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: 'theme-ice', label: 'COMMS // DRINK?'
+  },
+  loud: {
+    grid: () => SCREENS.loud_static.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: '', label: 'COMMS // WHAT?!'
+  },
+  nice: {
+    grid: () => SCREENS.nice_static.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: 'theme-matrix', label: 'COMMS // NICE!'
+  },
+  loading: {
+    grid: () => SCREENS.loading_static.map(r => [...r]),
+    mode: 1, modeName: 'STATIC', speed: 120, theme: 'theme-ice', label: 'SYS // 99% STUCK'
+  },
+
+  // --- TAB 2: POP-CULTURE EASTER EGGS ---
+  bttf: {
+    grid: () => padOrTrimGrid(hcatGrids(ICONS.flux, renderTextBanner("88 MPH // 1.21 GIGAWATTS!", true))),
+    mode: 3, modeName: 'LEFT', speed: 185, theme: '', label: 'EGG // 1.21 GW'
+  },
+  over9000: {
+    grid: () => padOrTrimGrid(hcatGrids(SCREENS.reticle, renderTextBanner("POWER LEVEL > 9000!", true))),
+    mode: 3, modeName: 'LEFT', speed: 205, theme: 'theme-hazard', label: 'SCOUTER // >9000'
+  },
+  rabbit: {
+    grid: () => padOrTrimGrid(hcatGrids(ICONS.rabbit, renderTextBanner("FOLLOW THE WHITE RABBIT", false))),
+    mode: 3, modeName: 'LEFT', speed: 165, theme: 'theme-matrix', label: 'EGG // RABBIT'
+  },
+  arcade: {
+    grid: () => padOrTrimGrid(hcatGrids(SCREENS.arcade_strip, SCREENS.arcade_strip, renderTextBanner("INSERT COIN // 1UP", true))),
+    mode: 3, modeName: 'LEFT', speed: 165, theme: '', label: 'EGG // ARCADE'
+  },
+  konami: {
+    grid: () => padOrTrimGrid(renderTextBanner("^ ^ v v < > < > B A [GOD MODE]", true)),
+    mode: 3, modeName: 'LEFT', speed: 180, theme: 'theme-ice', label: 'EGG // KONAMI'
+  },
+  shades: {
+    grid: () => padOrTrimGrid(hcatGrids(SCREENS.shades_strip, renderTextBanner("DEAL WITH IT", true))),
+    mode: 3, modeName: 'LEFT', speed: 165, theme: 'theme-ice', label: 'EGG // SHADES'
+  },
+  hal9000: {
+    grid: () => padOrTrimGrid(hcatGrids(ICONS.hal, renderTextBanner("I'M SORRY DAVE, I CAN'T DO THAT", false))),
+    mode: 3, modeName: 'LEFT', speed: 165, theme: 'theme-hazard', label: 'EGG // HAL-9000'
+  },
+  err404: {
+    grid: () => padOrTrimGrid(hcatGrids(ICONS.skull, renderTextBanner("ERR 404: SOUL NOT FOUND", true))),
+    mode: 3, modeName: 'LEFT', speed: 175, theme: 'theme-hazard', label: 'EGG // ERR-404'
+  },
+  quest: {
+    grid: () => padOrTrimGrid(hcatGrids(ICONS.quest, ICONS.quest, renderTextBanner("[!] SIDE QUEST AVAILABLE", true))),
+    mode: 3, modeName: 'LEFT', speed: 165, theme: '', label: 'NPC // SIDE QUEST'
+  },
+
+  // --- TAB 3: DIEGETIC HARDWARE FX ---
   telemetry_tape: {
     grid: () => hcatGrids(SCREENS.ecg, SCREENS.ecg, SCREENS.conduit, SCREENS.synth, SCREENS.reticle, SCREENS.hex, SCREENS.hazard, SCREENS.helix),
     mode: 3, modeName: 'LEFT', speed: 150, theme: '', label: 'STATE // TAPE-08'
@@ -667,8 +1169,16 @@ function encodeGridToBytes(grid) {
 }
 
 // ============================================================================
-// 3. Web Bluetooth Controller (Service 0xFEE9 / d44bc439...)
+// 3. UI Tabs & Web Bluetooth Controller
 // ============================================================================
+function switchTab(tabId, btnEl) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btnEl.classList.add('active');
+  if (tabId === 'tabPad') drawLedMatrix();
+}
+
 const SERVICE_UUID = "0000fee9-0000-1000-8000-00805f9b34fb";
 const COMMAND_UUID = "d44bc439-abfd-45a2-b575-925416129600";
 const UPLOAD_UUID  = "d44bc439-abfd-45a2-b575-92541612960a";
@@ -679,6 +1189,7 @@ let cmdChar = null;
 let uploadChar = null;
 let badgePowerOn = true;
 let isTransmitting = false;
+let lastSentLight = null;
 
 let currentGrid = PRESETS.telemetry_tape.grid();
 let currentMode = 3;
@@ -693,8 +1204,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 async function connectBadge() {
   if (!navigator.bluetooth) {
-    logMsg("ERR // WEB BLUETOOTH REQUIRES HTTPS OR CHROME ANDROID");
-    alert("Web Bluetooth is unavailable on plain HTTP. Open via the HTTPS link from serve_hud.py or enable chrome://flags/#unsafely-treat-insecure-origin-as-secure");
+    logMsg("ERR // OPEN HTTPS URL IN ANDROID CHROME");
     return;
   }
   try {
@@ -713,6 +1223,7 @@ async function connectBadge() {
     const service = await server.getPrimaryService(SERVICE_UUID);
     cmdChar = await service.getCharacteristic(COMMAND_UUID);
     uploadChar = await service.getCharacteristic(UPLOAD_UUID);
+    lastSentLight = null;
 
     try {
       const notifyChar = await service.getCharacteristic(NOTIFY_UUID);
@@ -764,8 +1275,6 @@ async function transmitCurrentGrid() {
   if (!cmdChar || !uploadChar) {
     const speed = parseInt(document.getElementById('rngSpeed').value, 10);
     const light = parseInt(document.getElementById('rngLight').value, 10);
-    const txInd = document.getElementById('txIndicator');
-    txInd.textContent = "TX // RELAY";
     const ok = await relayToServer({
       action: 'upload',
       grid: currentGrid,
@@ -773,22 +1282,21 @@ async function transmitCurrentGrid() {
       speed: speed,
       light: light
     });
-    txInd.textContent = ok ? "TX // OK" : "LOCAL";
-    if (!ok) logMsg("LOCAL PREVIEW UPDATED (TAP [LINK NODE] FOR DIRECT BLE)");
+    if (!ok) logMsg("PREVIEW READY — TAP [LINK NODE] TO BEAM");
     return;
   }
   if (isTransmitting) return;
   isTransmitting = true;
   const txInd = document.getElementById('txIndicator');
-  txInd.textContent = "TX // BUSY";
+  if (txInd) txInd.textContent = "TX // BUSY";
 
   try {
     const rawData = encodeGridToBytes(currentGrid);
     const len = rawData.length;
-    logMsg(`TX DATS // ${len} BYTES (${currentGrid[0].length}x12)...`);
+    logMsg(`TX // ${len}B (${currentGrid[0].length}x12) -> ${currentModeName}...`);
 
     await cmdChar.writeValueWithResponse(buildCommandPacket("DATS", (len >> 8) & 0xff, len & 0xff, 0, 0));
-    await sleep(160);
+    await sleep(130);
 
     for (let off = 0; off < len; off += 15) {
       const chunk = rawData.slice(off, off + 15);
@@ -801,25 +1309,30 @@ async function transmitCurrentGrid() {
       } else {
         await uploadChar.writeValue(enc);
       }
-      await sleep(14);
+      await sleep(13);
     }
 
     await cmdChar.writeValueWithResponse(buildCommandPacket("DATCP"));
-    await sleep(180);
+    await sleep(150);
 
     const speed = parseInt(document.getElementById('rngSpeed').value, 10);
     const light = parseInt(document.getElementById('rngLight').value, 10);
 
     await cmdChar.writeValueWithResponse(buildCommandPacket("MODE", currentMode));
-    await sleep(80);
-    await cmdChar.writeValueWithResponse(buildCommandPacket("SPEED", speed));
-    await sleep(80);
-    await cmdChar.writeValueWithResponse(buildCommandPacket("LIGHT", light));
+    await sleep(60);
+    if (currentMode !== 1) {
+      await cmdChar.writeValueWithResponse(buildCommandPacket("SPEED", speed));
+      await sleep(60);
+    }
+    if (lastSentLight !== light) {
+      await cmdChar.writeValueWithResponse(buildCommandPacket("LIGHT", light));
+      lastSentLight = light;
+    }
 
-    txInd.textContent = "TX // OK";
-    logMsg(`TX COMPLETE // ${currentGrid[0].length}x12 MODE=${currentModeName} SPD=${speed}`);
+    if (txInd) txInd.textContent = "TX // OK";
+    logMsg(`ACTIVE // ${document.getElementById('activeStateLabel').textContent}`);
   } catch (err) {
-    txInd.textContent = "TX // ERR";
+    if (txInd) txInd.textContent = "TX // ERR";
     logMsg("TX ERR // " + err.message);
   } finally {
     isTransmitting = false;
@@ -839,10 +1352,28 @@ async function selectPreset(key, btnEl) {
   document.getElementById('rngSpeed').value = p.speed;
   document.getElementById('valSpeed').textContent = p.speed;
 
-  if (btnEl) {
-    document.querySelectorAll('.cyber-panel button').forEach(b => b.classList.remove('active'));
-    btnEl.classList.add('active');
-  }
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+
+  drawLedMatrix();
+  await transmitCurrentGrid();
+}
+
+async function sendCustomText(e) {
+  e.preventDefault();
+  const input = document.getElementById('customMsgInput');
+  const txt = input.value.trim();
+  if (!txt) return;
+  input.blur();
+
+  currentPresetKey = 'custom';
+  currentGrid = renderTextBanner(txt, true);
+  currentMode = currentGrid[0].length <= 48 ? 1 : 3;
+  currentModeName = currentMode === 1 ? 'STATIC' : 'LEFT';
+  document.getElementById('activeStateLabel').textContent = 'COMMS // CUSTOM';
+  document.getElementById('modeLabel').textContent = `MODE: ${currentModeName} (${currentMode})`;
+  document.getElementById('rngSpeed').value = 175;
+  document.getElementById('valSpeed').textContent = 175;
 
   drawLedMatrix();
   await transmitCurrentGrid();
@@ -872,6 +1403,7 @@ async function setBadgeSpeed(val) {
 
 async function setBadgeLight(val) {
   const v = parseInt(val, 10);
+  lastSentLight = v;
   if (cmdChar) {
     await sendCommand(buildCommandPacket("LIGHT", v));
     logMsg(`LUMENS SET // ${v}`);
@@ -899,7 +1431,7 @@ const ledCtx = ledCanvas.getContext('2d');
 function drawLedMatrix() {
   const cols = currentGrid[0].length;
   document.getElementById('gridDimLabel').textContent = `${cols}x12 PX`;
-  const viewCols = 48; // Preview first 48x12 screen (or touch-edit 48x12)
+  const viewCols = 48;
   ledCtx.fillStyle = '#030407';
   ledCtx.fillRect(0, 0, ledCanvas.width, ledCanvas.height);
 
@@ -951,12 +1483,12 @@ function invertCurrentGrid() {
 }
 
 // ============================================================================
-// 5. Live Diegetic Wrist HUD Animation (Oscilloscope, Hex Stream & Wake Lock)
+// 5. Live Wrist HUD Animation + Real Phone Battery API + Wake Lock
 // ============================================================================
 const scopeCanvas = document.getElementById('scopeCanvas');
 const scopeCtx = scopeCanvas.getContext('2d');
 let phase = 0;
-const rainDrops = Array.from({length: 40}, () => Math.random() * 76);
+const rainDrops = Array.from({length: 40}, () => Math.random() * 68);
 
 function animateHud() {
   phase += 0.12;
@@ -966,7 +1498,7 @@ function animateHud() {
 
   const priColor = getComputedStyle(document.body).getPropertyValue('--pri').trim() || '#fcee0a';
 
-  if (currentPresetKey === 'matrix') {
+  if (currentPresetKey === 'matrix' || currentPresetKey === 'rabbit') {
     scopeCtx.fillStyle = priColor;
     for (let i = 0; i < rainDrops.length; i++) {
       const x = i * 6 + 2;
@@ -985,19 +1517,27 @@ function animateHud() {
 
   for (let x = 0; x < w; x++) {
     let y = h / 2;
-    const pos = (x + Math.floor(phase * 18)) % 64;
-    if (currentPresetKey === 'synth' || currentPresetKey === 'conduit') {
-      y += Math.sin(x * 0.18 + phase * 3) * 18 * Math.cos(x * 0.04 - phase);
-    } else if (currentPresetKey === 'hazard') {
-      y += ((Math.sin(x * 0.4 + phase * 5) > 0 ? 1 : -1) * 16) + (Math.random() - 0.5) * 10;
+    if (currentPresetKey === 'flatline') {
+      y += (Math.random() - 0.5) * 0.8;
+    } else if (currentPresetKey === 'nervous' || currentPresetKey === 'over9000') {
+      const pos = (x + Math.floor(phase * 38)) % 26;
+      if (pos === 8) y -= 8;
+      else if (pos === 11) y -= 26;
+      else if (pos === 13) y += 22;
+      else if (pos === 16) y -= 10;
+      else y += (Math.random() - 0.5) * 4;
+    } else if (currentPresetKey === 'synth' || currentPresetKey === 'conduit') {
+      y += Math.sin(x * 0.18 + phase * 3) * 16 * Math.cos(x * 0.04 - phase);
+    } else if (currentPresetKey === 'hazard' || currentPresetKey === 'err404') {
+      y += ((Math.sin(x * 0.4 + phase * 5) > 0 ? 1 : -1) * 14) + (Math.random() - 0.5) * 9;
     } else {
-      // Diegetic ECG waveform
-      if (pos === 20) y -= 6;
-      else if (pos === 24) y += 8;
-      else if (pos === 27) y -= 28;
-      else if (pos === 29) y += 22;
-      else if (pos === 34) y -= 9;
-      else y += Math.sin(x * 0.08 + phase) * 2;
+      const pos = (x + Math.floor(phase * 18)) % 64;
+      if (pos === 20) y -= 5;
+      else if (pos === 24) y += 7;
+      else if (pos === 27) y -= 24;
+      else if (pos === 29) y += 19;
+      else if (pos === 34) y -= 8;
+      else y += Math.sin(x * 0.08 + phase) * 1.8;
     }
     if (x === 0) scopeCtx.moveTo(x, y);
     else scopeCtx.lineTo(x, y);
@@ -1013,13 +1553,33 @@ function updateHexStream() {
     row += Math.floor(Math.random() * 256).toString(16).toUpperCase().padStart(2, '0') + " ";
   }
   hexLines.push(row.trim());
-  if (hexLines.length > 6) hexLines.shift();
+  if (hexLines.length > 5) hexLines.shift();
   document.getElementById('hexBox').textContent = hexLines.join("\n");
 
-  // Subtle jitter on vitals
-  const baseBpm = currentPresetKey === 'hazard' ? 196 : 172;
-  document.getElementById('valBpm').textContent = baseBpm + Math.floor(Math.random() * 7);
-  document.getElementById('valLoad').textContent = (80 + Math.floor(Math.random() * 18)) + "%";
+  if (currentPresetKey === 'flatline') {
+    document.getElementById('valBpm').textContent = "000";
+    document.getElementById('valLoad').textContent = "0%";
+  } else if (currentPresetKey === 'nervous' || currentPresetKey === 'over9000') {
+    document.getElementById('valBpm').textContent = 222 + Math.floor(Math.random() * 14);
+    document.getElementById('valLoad').textContent = (96 + Math.floor(Math.random() * 4)) + "%";
+  } else {
+    const baseBpm = currentPresetKey === 'hazard' ? 196 : 172;
+    document.getElementById('valBpm').textContent = baseBpm + Math.floor(Math.random() * 7);
+    document.getElementById('valLoad').textContent = (80 + Math.floor(Math.random() * 16)) + "%";
+  }
+}
+
+// Live Phone Battery Status API (Chrome Android)
+if ('getBattery' in navigator) {
+  navigator.getBattery().then(batt => {
+    const updateBatt = () => {
+      const pct = Math.round(batt.level * 100);
+      document.getElementById('valBatt').textContent = pct + "%" + (batt.charging ? "⚡" : "");
+    };
+    updateBatt();
+    batt.addEventListener('levelchange', updateBatt);
+    batt.addEventListener('chargingchange', updateBatt);
+  }).catch(() => {});
 }
 
 async function requestWakeLock() {
